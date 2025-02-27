@@ -8,13 +8,15 @@
   <!-- IIFE build for the widget library -->
   <script src="https://cdn.jsdelivr.net/npm/@cowprotocol/widget-lib@latest/index.iife.js"></script>
   <style>
-    html {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
+    @font-face {
+      font-family: 'Genty';
+      src: url('fonts/Genty-Regular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
     }
     body {
+      justify-content: center;
+      align-items: center;
       width: 100%;
       height: 100%;
       margin: 0;
@@ -22,7 +24,7 @@
       font-family: 'Fuzzy Bubbles', sans-serif;
       background-color: #966dcd;
       background-image: url('img/swapbg.jpg');
-      color: #fff;
+      color: #F6F0E6;
     }
     header {
       background-color: #663399;
@@ -33,9 +35,10 @@
       position: relative;
     }
     header .logo {
-      font-size: 16px;
+      font-family: 'Genty';
+      font-size: 25px;
       font-weight: 400;
-      text-transform: uppercase;
+      padding-top: 5px;
     }
     .contract {
       font-size: 16px;
@@ -54,7 +57,7 @@
       align-items: center;
     }
     nav ul li a {
-      color: #fff;
+      color: #F6F0E6;
       text-decoration: none;
       font-size: 16px;
     }
@@ -71,7 +74,7 @@
       font-size: 24px;
       background: none;
       border: none;
-      color: #fff;
+      color: #F6F0E6;
     }
     .mobile-menu {
         position: fixed;
@@ -99,12 +102,13 @@
     .mobile-menu ul div {
         display: flex;
         gap: 10px;
+        justify-content: center;
     }
     .mobile-menu ul li {
       margin-bottom: 20px;
     }
     .mobile-menu ul li a {
-      color: #fff;
+      color: #F6F0E6;
       font-size: 18px;
       text-decoration: none;
     }
@@ -117,10 +121,19 @@
     .mobile-menu .close-menu {
       font-size: 30px;
       position: absolute;
+      top: 20px;
+      right: 40px;
       background: none;
       border: none;
-      color: #fff;
+      color: #F6F0E6;
       cursor: pointer;
+    }
+    .mobile-menu .centered-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      align-items: center;
     }
     #widget-container {
       display: flex;
@@ -135,12 +148,67 @@
       transform-origin: top center;
     }
     @media (max-width: 768px) {
+      /* General resets for mobile */
+      html, body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        font-size: 14px;
+        background-size: cover;
+        background-position: center;
+      }
+
+      /* Header adjustments */
+      header {
+        padding: 10px 15px;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+      }
+      header .logo {
+        font-size: 25px;
+        text-align: left;
+        flex: 1;
+        margin-bottom: 0;
+      }
+      /* Hide desktop elements and show mobile controls */
       .desktop-menu,
       .contract-desktop {
         display: none;
       }
       .hamburger {
         display: block;
+        font-size: 24px;
+        background: none;
+        border: none;
+        color: #F6F0E6;
+        cursor: pointer;
+      }
+      
+      /* Mobile Menu remains unchanged */
+      .mobile-menu {
+        padding: 15px;
+      }
+      .mobile-menu ul {
+        margin-top: 40px;
+      }
+
+      /* Widget Container adjustments */
+      #widget-container {
+        text-align: center;
+        padding: 5px; /* reduce padding as needed */
+        margin-top: 10%;
+      }
+      /* Make widget wrapper responsive with padding and maximum width */
+      #widget-wrapper {
+        max-width: 640px;
+        margin: 0 auto;
+        box-sizing: border-box;
+      }
+
+      /* Ensure images and media stay responsive */
+      img {
+        max-width: 100%;
+        height: auto;
       }
     }
   </style>
@@ -148,7 +216,7 @@
 <body>
   <!-- Header -->
   <header>
-    <div class="logo">$Bone</div>
+    <div class="logo">Fleabone</div>
     <!-- Desktop Menu -->
     <nav class="desktop-menu">
       <ul>
@@ -193,9 +261,6 @@
   <div class="mobile-menu" id="mobile-menu">
     <button class="close-menu" id="close-menu">&times;</button>
     <ul>
-      <li>
-        <a href="https://www.fleabone.com">Home</a>
-      </li>
       <div>
         <li>
             <a href="https://dexscreener.com/ethereum/0xdbdbf019499cc0d4766811d93c69188a2b74610f" target="_blank">
@@ -223,11 +288,16 @@
             </a>
         </li>
       </div>  
-      <li>
-        <a href="#" style="font-size:14px; word-break: break-all;" onclick="copyAddress()">
-          0x70...E22E <img src="img/copy.png" alt="Copy" style="width:16px; height:16px; vertical-align: middle;">
-        </a>
-      </li>
+      <div class="centered-links">
+        <li>
+          <a href="https://www.fleabone.com">Home</a>
+        </li>
+        <li>
+          <a href="#" style="font-size:16px; word-break: break-all;" onclick="copyAddress()">
+            0x70...E22E <img src="img/copy.png" alt="Copy" style="width:16px; height:16px; vertical-align: middle;">
+          </a>
+        </li>
+      </div>
     </ul>
   </div>
 
@@ -264,12 +334,20 @@
     function scaleWidget() {
       const wrapper = document.getElementById('widget-wrapper');
       const designedWidth = 640;
-      const availableWidth = Math.min(window.innerWidth, designedWidth);
-      const scaleFactor = availableWidth / designedWidth;
-      wrapper.style.transform = 'scale(' + scaleFactor + ')';
+      
+      if (window.innerWidth < 768) {
+        // On mobile, scale to fill the viewport (with minimal margins)
+        const availableWidth = window.innerWidth - 10; // adjust as needed
+        const scaleFactor = (availableWidth / designedWidth) * 1.3;
+        wrapper.style.transform = `scale(${scaleFactor})`;
+      } else {
+        // On non-mobile, do not scale the widget
+        wrapper.style.transform = 'scale(1)';
+      }
     }
     window.addEventListener('resize', scaleWidget);
     window.addEventListener('DOMContentLoaded', scaleWidget);
+
 
     // Widget parameters
     const params = {
@@ -292,7 +370,7 @@
           "baseTheme": "dark",
           "primary": "#966dcd",
           "paper": "#663399",
-          "text": "#ffffff"
+          "text": "#F6F0E6"
       },
       "standaloneMode": true,
       "disableToastMessages": false,
